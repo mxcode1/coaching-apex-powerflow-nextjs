@@ -4,7 +4,7 @@
  */
 
 import type { ContentSource, Homepage, About, Service, Testimonial, PricingPlan, TeamMember, ScheduleSlot, FAQ, ContactInfo, BlogPost, SiteSettings } from '../types'
-import { client } from '@/lib/sanity/client'
+import { getClient } from '@/lib/sanity/client'
 import { urlForImage } from '@/lib/sanity/imageUrl'
 
 export class SanityContentSource implements ContentSource {
@@ -14,6 +14,14 @@ export class SanityContentSource implements ContentSource {
    * Returns fallback value if fetch fails (network issues, empty dataset, etc.)
    */
   private async safeFetch<T>(query: string, params?: Record<string, any>, fallback?: T): Promise<T | null> {
+    const client = getClient()
+    
+    // If client is null (Sanity not configured), return fallback
+    if (!client) {
+      console.warn('⚠️ Sanity client not configured, using fallback')
+      return fallback !== undefined ? fallback : null
+    }
+
     try {
       const result = await client.fetch(query, params)
       // If result is null/undefined, use fallback
