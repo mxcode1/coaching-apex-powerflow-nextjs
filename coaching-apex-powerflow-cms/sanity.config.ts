@@ -5,10 +5,26 @@ import {schemaTypes} from './schemaTypes'
 
 export default defineConfig({
   name: 'default',
-  title: 'PowerFlow CMS',
+  title: 'Coaching CMS',
 
   projectId: 'pmybjuoo',
   dataset: 'production',
+
+  // Studio configuration
+  studioHost: 'coaching-studio',
+
+  // Enable dark mode by default
+  studio: {
+    components: {
+      navbar: (props) => {
+        // Set color scheme to dark on load
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('sanity-ui-color-scheme', 'dark')
+        }
+        return props.renderDefault(props)
+      },
+    },
+  },
 
   plugins: [
     structureTool({
