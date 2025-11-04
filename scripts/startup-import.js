@@ -4,9 +4,13 @@
  * if the CMS is empty (no existing content detected)
  */
 
-const { createClient } = require('@sanity/client');
 const fs = require('fs');
 const path = require('path');
+
+// Load environment variables from .env.local
+require('dotenv').config({ path: path.join(__dirname, '../.env.local') });
+
+const { createClient } = require('@sanity/client');
 
 // Initialize Sanity client
 const client = createClient({
