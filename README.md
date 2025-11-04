@@ -1,96 +1,269 @@
-# PowerFlow - Full Stack Fitness & Coaching Platform# PowerFlow - Next.js VersionThis is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PowerFlow - Full Stack Fitness & Coaching Platform
 
+A comprehensive Next.js web application for fitness studios, personal trainers, and wellness coaches. Built with **Next.js 16** and **Sanity CMS** for scalable content management and modern web performance.
 
+## 🚀 Live Demo & Deployment
 
-A comprehensive web application template designed for fitness studios, personal trainers, and wellness coaches. Built with Next.js and Sanity CMS for scalable content management and modern web performance.
+**Vercel Deployment**: Your app is configured for seamless Vercel deployment!
 
+### Quick Deploy to Vercel
 
+1. **Push to GitHub** (already done! ✅)
+2. **Import to Vercel**: [vercel.com/new](https://vercel.com/new)
+3. **Set Environment Variables** (see below)
+4. **Deploy!**
 
-## Project Overview## Phase B: Minimal Migration (Demo Ready)## Getting Started
+### Required Environment Variables for Vercel
 
+```bash
+# Content Source (use 'json' for guaranteed build success)
+CONTENT_SOURCE=json
 
+# Optional - Sanity CMS (for future dynamic content)
+NEXT_PUBLIC_SANITY_PROJECT_ID=pmybjuoo
+NEXT_PUBLIC_SANITY_DATASET=production
+NEXT_PUBLIC_SANITY_API_VERSION=2024-01-01
 
-PowerFlow is a production-ready template that combines a dynamic frontend with a powerful content management system. The platform enables fitness professionals to manage their services, pricing, schedules, blog content, and client testimonials through an intuitive admin interface while providing visitors with a responsive, engaging user experience.
+# Optional - Email Integration
+RESEND_API_KEY=your_resend_api_key
+RECIPIENT_EMAIL=your_email@example.com
+```
 
+**Important**: Set these for **Production**, **Preview**, and **Development** environments in Vercel.
 
+## 🎯 After Deployment
 
-Key features include automated content population, flexible pricing plans, contact forms with email integration, class scheduling, and a complete blog system for content marketing.This is a Next.js-powered version of the PowerFlow Gym & Fitness template with working form submissions via API routes.First, run the development server:
+Once your site is live on Vercel:
 
+1. **Visit Your Site**: `https://your-project.vercel.app`
+2. **Access Sanity Studio**: `https://your-project.vercel.app/studio`
+3. **Test Forms**: Try the contact form at `/contact`
+4. **Explore Content**: Browse all pages and features
 
+### Switching to Dynamic CMS (Optional)
 
-## Technical Stack
+To enable live content editing via Sanity Studio:
 
+1. Visit `/studio` on your deployed site
+2. Ensure Sanity project is set up with content
+3. Update Vercel environment variable: `CONTENT_SOURCE=sanity`
+4. Redeploy
 
+📖 **See [VERCEL-DEPLOYMENT.md](./VERCEL-DEPLOYMENT.md) for detailed deployment guide**
 
-### Frontend Framework## 🚀 Quick Start```bash
+---
 
-- **Next.js 16.0.1** - React-based web framework with App Router
+## 🏗️ Technical Stack
 
-- **React 19.2.0** - Latest React with concurrent featuresnpm run dev
+- **Next.js 16.0.1** - React framework with App Router
+- **React 19.2.0** - Latest React with concurrent features
+- **TypeScript 5.x** - Type-safe development
+- **Sanity CMS 4.13.0** - Headless CMS for content management
+- **Resend 6.4.0** - Modern email API for forms
+- **Bootstrap 5.x** - Responsive CSS framework
 
-- **TypeScript 5.x** - Type-safe development environment
+## 🚦 Getting Started Locally
 
-### 1. Install Dependencies# or
+### 1. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 2. Setup Environment Variables
+
+Copy `.env.example` to `.env.local` and configure:
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local`:
+
+```bash
+# Content source
+CONTENT_SOURCE=json  # or 'sanity' for CMS
+
+# Email configuration (get key from resend.com)
+RESEND_API_KEY=your_key_here
+RECIPIENT_EMAIL=your_email@example.com
+
+# Sanity (optional for local dev)
+NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
+NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_TOKEN=your_token
+```
+
+### 3. Run Development Server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### 4. Access Sanity Studio (Optional)
+
+```bash
+npm run sanity
+# or visit http://localhost:3000/studio after starting dev server
+```
+
+## 📋 Key Features
+
+✅ **Responsive Design** - Mobile-first, works on all devices  
+✅ **Contact Form** - Email integration with Resend API  
+✅ **Membership Forms** - Join/registration with email notifications  
+✅ **Blog System** - Full blog with categories and featured posts  
+✅ **Class Schedules** - Weekly timetables and booking  
+✅ **Pricing Plans** - Flexible membership tiers  
+✅ **Sanity CMS** - Live content editing via `/studio`  
+✅ **SEO Optimized** - Meta tags and semantic HTML  
+✅ **TypeScript** - Type-safe codebase  
+
+## 📁 Project Structure
+
+```
+apex-coaching-platform-cms-nextjs/
+├── app/                          # Next.js App Router
+│   ├── page.tsx                  # Homepage
+│   ├── about/                    # About page
+│   ├── blog/                     # Blog pages
+│   ├── classes/                  # Services/Classes
+│   ├── contact/                  # Contact page
+│   ├── join/                     # Membership signup
+│   ├── pricing/                  # Pricing plans
+│   ├── schedule/                 # Class schedules
+│   ├── studio/                   # Sanity Studio (embedded)
+│   └── api/                      # API routes
+│       ├── contact/              # Contact form handler
+│       ├── join/                 # Join form handler
+│       └── sanity/               # Sanity utilities
+├── components/                   # React components
+│   ├── forms/                    # Form components
+│   └── layout/                   # Layout components
+├── content/                      # Static JSON content
+│   ├── homepage.ts
+│   ├── pricing.ts
+│   └── services.ts
+├── lib/                          # Utilities and configs
+│   ├── content/                  # Content source abstraction
+│   │   ├── sources/              # JSON & Sanity sources
+│   │   ├── index.ts              # Content API
+│   │   └── types.ts              # TypeScript types
+│   └── sanity/                   # Sanity client & schemas
+├── public/                       # Static assets
+│   ├── images/                   # Images and media
+│   ├── css/                      # Additional styles
+│   └── js/                       # Legacy scripts
+├── .env.local                    # Environment variables (create this)
+├── .env.example                  # Example env file
+├── next.config.ts                # Next.js configuration
+├── tsconfig.json                 # TypeScript configuration
+├── VERCEL-DEPLOYMENT.md          # Deployment guide
+└── README.md                     # This file
+```
+
+## 🛠️ Available Scripts
+
+```bash
+npm run dev          # Start development server (port 3000)
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run sanity       # Start Sanity Studio
+npm run import-content      # Import example content to Sanity
+npm run check-content       # Check Sanity content status
+```
+
+## 🎨 Customization
 
 ### Content Management
 
-- **Sanity CMS 4.13.0** - Headless CMS with real-time collaborationyarn dev
+**Option A: JSON Source (Default)**
+- Edit files in `/content/` directory
+- Changes require code deployment
+- Fast builds, no external dependencies
 
-- **Next-Sanity 11.6.3** - Official Sanity integration for Next.js
+**Option B: Sanity CMS (Recommended for Production)**
+- Edit content via Studio at `/studio`
+- Real-time updates without deployment
+- Collaborative content editing
 
-- **Sanity Vision 4.13.0** - Query testing and debugging tools```bash# or
+### Styling
 
+- Global styles: `app/globals.css`
+- Component styles: Individual CSS modules
+- Bootstrap theme: Customize in `/public/css/`
 
+### Branding
 
-### Communication & Stylingnpm installpnpm dev
+- Logo: Replace files in `/public/images/logo/`
+- Colors: Update CSS variables in `globals.css`
+- Content: Edit via Sanity Studio or JSON files
 
-- **Resend 6.4.0** - Modern email API for form submissions
+## 📧 Email Setup (Resend)
 
-- **Bootstrap 5.x** - Responsive CSS framework```# or
+1. Create account at [resend.com](https://resend.com)
+2. Get API key (free tier: 100 emails/day)
+3. Add to `.env.local`:
+   ```bash
+   RESEND_API_KEY=re_your_key_here
+   RECIPIENT_EMAIL=your_email@example.com
+   ```
+4. Customize email templates in:
+   - `app/api/contact/route.ts`
+   - `app/api/join/route.ts`
 
-- **Custom CSS** - Enhanced styling and animations
+## 🐛 Troubleshooting
 
-bun dev
+### Build Fails on Vercel
 
-### Development Tools
+**Solution**: Ensure `CONTENT_SOURCE=json` in environment variables
 
-- **ESLint 9.x** - Code quality and consistency### 2. Setup Environment Variables```
+### Forms Not Working
 
-- **Node.js 20+** - Runtime environment
+**Solution**: 
+1. Check `RESEND_API_KEY` is set
+2. Verify API key is active
+3. Check browser console for errors
 
+### Sanity Studio Won't Load
 
+**Solution**:
+1. Verify `NEXT_PUBLIC_SANITY_PROJECT_ID` is correct
+2. Check Sanity project exists at [sanity.io/manage](https://sanity.io/manage)
+3. Ensure project has proper CORS settings
 
-## System Architecture
+### Content Not Appearing
 
-Get your Resend API key from: https://resend.com/api-keysOpen [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Solution**:
+- Using JSON source: Check files in `/content/`
+- Using Sanity: Run `npm run import-content` to populate CMS
 
-### URLs & Access Points
+## 📚 Documentation
 
+- **Deployment Guide**: [VERCEL-DEPLOYMENT.md](./VERCEL-DEPLOYMENT.md)
+- **Next.js Docs**: [nextjs.org/docs](https://nextjs.org/docs)
+- **Sanity Docs**: [sanity.io/docs](https://www.sanity.io/docs)
+- **Resend Docs**: [resend.com/docs](https://resend.com/docs)
 
+## 🤝 Support
 
-#### Public Website
+For issues or questions:
+- Check [VERCEL-DEPLOYMENT.md](./VERCEL-DEPLOYMENT.md) for deployment help
+- Review Next.js documentation for framework questions
+- Contact Sanity support for CMS issues
 
-- **Development**: `http://localhost:3000`Then update `.env.local`:You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📄 License
 
-- **Production**: Deploy to Vercel, Netlify, or preferred hosting
+This template is provided for commercial and personal use. Customize freely for your fitness business needs.
 
+---
 
-
-#### Content Management System
-
-- **Sanity Studio**: `http://localhost:3333````bashThis project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-- **Studio Path**: `/studio` (when deployed)
-
-RESEND_API_KEY=re_your_actual_api_key_here
-
-#### API Endpoints
-
-- **Content Import**: `/api/sanity/startup-check` - Automated content populationRECIPIENT_EMAIL=mxdevelopment.code@gmail.com## Learn More
-
-- **Contact Form**: `/api/contact` - Form submission handling
-
-- **Join Form**: `/api/join` - Membership registration processing```
+**Built with ❤️ using Next.js, Sanity CMS, and modern web technologies**
 
 
 
