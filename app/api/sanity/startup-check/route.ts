@@ -6,15 +6,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@sanity/client';
 
-const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
-  apiVersion: '2024-01-01',
-  token: process.env.SANITY_API_TOKEN,
-  useCdn: false
-});
+// Lazy client initialization to avoid build-time errors
+function getClient() {
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
+  const token = process.env.SANITY_API_TOKEN;
+
+  // If Sanity is not configured, return null
+  if (!projectId) {
+    return null;
+  }
+
+  return createClient({
+    projectId,
+    dataset,
+    apiVersion: '2024-01-01',
+    token,
+    useCdn: false
+  });
+}
 
 async function checkExistingContent() {
+  const client = getClient();
+  if (!client) {
+    return { hasContent: false, counts: [0, 0, 0, 0, 0], total: 0 };
+  }
+
   try {
     const queries = [
       'count(*[_type == "service"])',
@@ -37,6 +54,11 @@ async function checkExistingContent() {
 }
 
 async function importExampleContent() {
+  const client = getClient();
+  if (!client) {
+    return { success: false, error: 'Sanity client not configured' };
+  }
+
   try {
     // Import sample services
     const services = [
@@ -203,12 +225,20 @@ async function importExampleContent() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Sanity is configured
+    if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {
+      return NextResponse.json({
+        success: false,
+        message: 'Sanity not configured - using JSON content source'
+      }, { status: 200 });
+    }
+
     // Check if we have API token
     if (!process.env.SANITY_API_TOKEN) {
       return NextResponse.json({
         success: false,
         message: 'No API token configured - skipping auto-import'
-      });
+      }, { status: 200 });
     }
 
     // Check existing content
@@ -238,7 +268,7 @@ export async function POST(request: NextRequest) {
         success: false,
         message: `❌ Import failed: ${importResult.error}`,
         error: importResult.error
-      });
+      }, { status: 500 });
     }
 
   } catch (error) {
@@ -248,6 +278,6 @@ export async function POST(request: NextRequest) {
       success: false,
       message: 'Startup check failed',
       error: errorMessage
-    });
+    }, { status: 500 });
   }
 }
