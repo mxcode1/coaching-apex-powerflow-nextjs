@@ -13,6 +13,43 @@ export default defineConfig({
   basePath: '/studio',
   
   appId: 'powerflow-nextjs-studio',
+
+  // Enable dark mode by default and run startup content check
+  studio: {
+    components: {
+      navbar: (props) => {
+        // Set dark theme as default and run startup check
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('sanity-ui-color-scheme', 'dark')
+          
+          // Run startup content check after Studio loads
+          setTimeout(async () => {
+            try {
+              console.log('🎯 PowerFlow CMS - Running startup content check...');
+              const response = await fetch('/api/sanity/startup-check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              
+              if (response.ok) {
+                const result = await response.json();
+                console.log(result.message);
+                
+                if (result.imported) {
+                  console.log(`🎉 Auto-imported ${result.imported} example documents!`);
+                  console.log('💡 All content is labeled with "generic-example-content-" prefix');
+                  console.log('🔄 Refresh the Studio to see your new content');
+                }
+              }
+            } catch (error) {
+              console.log('💡 Manual import available: npm run import-content');
+            }
+          }, 2000); // Wait 2 seconds for Studio to fully load
+        }
+        return props.renderDefault(props)
+      },
+    },
+  },
   
   plugins: [
     structureTool({
@@ -99,4 +136,6 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
   },
+
+
 })

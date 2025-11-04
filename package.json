@@ -6,7 +6,11 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "import-content": "node scripts/import-content.js",
+    "import-content:force": "node scripts/import-content.js --force",
+    "sanity": "./scripts/start-cms.sh",
+    "check-content": "node scripts/startup-import.js"
   },
   "dependencies": {
     "@sanity/image-url": "^1.2.0",

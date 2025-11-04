@@ -100,9 +100,11 @@ export default defineType({
       title: 'name',
       subtitle: 'intensity',
       media: 'image',
-      duration: 'duration'
+      duration: 'duration',
+      slug: 'slug'
     },
-    prepare({ title, subtitle, media, duration }) {
+    prepare({ title, subtitle, media, duration, slug }) {
+      const slugValue = slug?.current
       return {
         title,
         subtitle: `${subtitle} intensity • ${duration} min`,
