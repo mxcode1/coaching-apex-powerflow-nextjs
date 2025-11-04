@@ -1,10 +1,13 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  // Await the params promise in Next.js 16
+  const { slug } = await params
+  
   // Mock blog post - TODO: Replace with CMS data
   const post = {
-    slug: params.slug,
+    slug: slug,
     title: '5 Benefits of Strength Training You Should Know',
     content: `
       <p>Strength training is one of the most effective ways to improve your overall health and fitness. Whether you're looking to build muscle, lose weight, or simply feel stronger in your daily life, incorporating strength training into your routine can provide incredible benefits.</p>
