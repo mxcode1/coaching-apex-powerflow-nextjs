@@ -21,4 +21,9 @@ export const client = createClient({
   useCdn: process.env.NODE_ENV === 'production', // Use CDN in production
   token, // Optional: needed for authenticated requests
   perspective: 'published', // Only fetch published documents
+  // Add timeout for build process
+  timeout: 30000, // 30 second timeout
+  // Retry configuration
+  maxRetries: 2,
+  retryDelay: (attemptNumber) => 1000 * attemptNumber,
 })

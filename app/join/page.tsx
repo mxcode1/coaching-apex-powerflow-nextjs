@@ -63,7 +63,7 @@ export default async function JoinPage() {
                   </div>
                   <p className="text-gray mb-4">{plan.tagline}</p>
                   <ul className="list-unstyled mb-4">
-                    {plan.benefits.map((benefit, i) => (
+                    {(plan.benefits || []).map((benefit, i) => (
                       <li key={i} className="mb-2">
                         <i className="icofont-check-circled id-color me-2"></i>
                         {benefit}

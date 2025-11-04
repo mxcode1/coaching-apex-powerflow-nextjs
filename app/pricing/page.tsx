@@ -44,7 +44,7 @@ export default async function PricingPage() {
                     <span className="text-gray">{plan.durationUnit}</span>
                   </div>
                   <ul className="list-unstyled mb-4">
-                    {plan.benefits.map((benefit, i) => (
+                    {(plan.benefits || []).map((benefit, i) => (
                       <li key={i} className="mb-3">
                         <i className="icofont-check-circled id-color me-2"></i>
                         {benefit}

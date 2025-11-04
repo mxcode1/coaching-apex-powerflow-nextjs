@@ -14,14 +14,28 @@ import { SanityContentSource } from './sources/sanity'
 export function getContentSource(): ContentSource {
   const source = (process.env.CONTENT_SOURCE || 'json').toLowerCase()
   
+  // Check if Sanity is properly configured
+  const hasSanityConfig = !!(
+    process.env.NEXT_PUBLIC_SANITY_PROJECT_ID &&
+    process.env.NEXT_PUBLIC_SANITY_DATASET
+  )
+  
   // Log which source is active (dev mode only)
   if (process.env.NODE_ENV === 'development') {
     console.log(`📦 [Content Source]: Using ${source.toUpperCase()} source`)
+    if (source === 'sanity' && !hasSanityConfig) {
+      console.warn('⚠️  [Content Source]: Sanity selected but not configured, falling back to JSON')
+    }
   }
   
   switch (source) {
     case 'sanity':
-      return new SanityContentSource()
+      // Only use Sanity if properly configured, otherwise fallback to JSON
+      if (hasSanityConfig) {
+        return new SanityContentSource()
+      }
+      console.warn('⚠️  Sanity not configured, using JSON fallback')
+      return new JsonContentSource()
     
     case 'json':
     default:

@@ -9,9 +9,27 @@ import { urlForImage } from '@/lib/sanity/imageUrl'
 
 export class SanityContentSource implements ContentSource {
   
+  /**
+   * Wrapper to handle Sanity fetch errors gracefully
+   * Returns fallback value if fetch fails (network issues, empty dataset, etc.)
+   */
+  private async safeFetch<T>(query: string, params?: Record<string, any>, fallback?: T): Promise<T | null> {
+    try {
+      const result = await client.fetch(query, params)
+      // If result is null/undefined, use fallback
+      if (result === null || result === undefined) {
+        return fallback !== undefined ? fallback : null
+      }
+      return result
+    } catch (error) {
+      console.warn('⚠️ Sanity fetch failed, using fallback:', error instanceof Error ? error.message : 'Unknown error')
+      return fallback !== undefined ? fallback : null
+    }
+  }
+  
   // Homepage
   async getHomepage(): Promise<Homepage> {
-    const data = await client.fetch(`
+    const data = await this.safeFetch<Homepage>(`
       *[_type == "homepage"][0]{
         hero {
           title,
@@ -42,12 +60,26 @@ export class SanityContentSource implements ContentSource {
       }
     `)
     
-    return data || this.getDefaultHomepage()
+    const defaultHomepage = this.getDefaultHomepage()
+    const homepage = data || defaultHomepage
+    
+    // Ensure nested structures exist (Sanity might return null)
+    return {
+      hero: {
+        ...(homepage.hero || defaultHomepage.hero),
+        memberImages: (homepage.hero?.memberImages || []),
+      },
+      about: {
+        ...(homepage.about || defaultHomepage.about),
+        images: (homepage.about?.images || []),
+      },
+      stats: homepage.stats || [],
+    }
   }
   
   // About
   async getAbout(): Promise<About> {
-    const data = await client.fetch(`
+    const data = await this.safeFetch<About>(`
       *[_type == "about"][0]{
         hero,
         story,
@@ -117,7 +149,7 @@ export class SanityContentSource implements ContentSource {
   
   // Services/Classes
   async getServices(): Promise<Service[]> {
-    const services = await client.fetch(`
+    const services = await this.safeFetch<Service[]>(`
       *[_type == "service"] | order(order asc) {
         "id": _id,
         name,
@@ -132,13 +164,13 @@ export class SanityContentSource implements ContentSource {
         featured,
         order
       }
-    `)
+    `, {}, [])
     
     return services || []
   }
   
   async getServiceBySlug(slug: string): Promise<Service | null> {
-    const service = await client.fetch(`
+    const service = await this.safeFetch<Service>(`
       *[_type == "service" && slug.current == $slug][0] {
         "id": _id,
         name,
@@ -153,14 +185,14 @@ export class SanityContentSource implements ContentSource {
         featured,
         order
       }
-    `, { slug })
+    `, { slug }, undefined)
     
     return service || null
   }
   
   // Testimonials
   async getTestimonials(): Promise<Testimonial[]> {
-    const testimonials = await client.fetch(`
+    const testimonials = await this.safeFetch<Testimonial[]>(`
       *[_type == "testimonial"] | order(order asc) {
         "id": _id,
         quote,
@@ -171,13 +203,13 @@ export class SanityContentSource implements ContentSource {
         featured,
         order
       }
-    `)
+    `, {}, [])
     
     return testimonials || []
   }
   
   async getFeaturedTestimonials(): Promise<Testimonial[]> {
-    const testimonials = await client.fetch(`
+    const testimonials = await this.safeFetch<Testimonial[]>(`
       *[_type == "testimonial" && featured == true] | order(order asc) {
         "id": _id,
         quote,
@@ -188,14 +220,14 @@ export class SanityContentSource implements ContentSource {
         featured,
         order
       }
-    `)
+    `, {}, [])
     
     return testimonials || []
   }
   
   // Pricing
   async getPricingPlans(): Promise<PricingPlan[]> {
-    const plans = await client.fetch(`
+    const plans = await this.safeFetch<PricingPlan[]>(`
       *[_type == "pricingPlan"] | order(order asc) {
         "id": _id,
         name,
@@ -209,14 +241,18 @@ export class SanityContentSource implements ContentSource {
         ctaText,
         ctaLink
       }
-    `)
+    `, {}, [])
     
-    return plans || []
+    // Ensure benefits array exists for each plan
+    return (plans || []).map(plan => ({
+      ...plan,
+      benefits: plan.benefits || [],
+    }))
   }
   
   // Team
   async getTeamMembers(): Promise<TeamMember[]> {
-    const members = await client.fetch(`
+    const members = await this.safeFetch<TeamMember[]>(`
       *[_type == "teamMember"] | order(order asc) {
         "id": _id,
         name,
@@ -228,14 +264,14 @@ export class SanityContentSource implements ContentSource {
         featured,
         order
       }
-    `)
+    `, {}, [])
     
     return members || []
   }
   
   // Schedule
   async getSchedule(): Promise<ScheduleSlot[]> {
-    const schedule = await client.fetch(`
+    const schedule = await this.safeFetch<ScheduleSlot[]>(`
       *[_type == "scheduleSlot"] | order(day asc, time asc) {
         "id": _id,
         day,
@@ -246,13 +282,13 @@ export class SanityContentSource implements ContentSource {
         room,
         spots
       }
-    `)
+    `, {}, [])
     
     return schedule || []
   }
   
   async getScheduleByDay(day: ScheduleSlot['day']): Promise<ScheduleSlot[]> {
-    const schedule = await client.fetch(`
+    const schedule = await this.safeFetch<ScheduleSlot[]>(`
       *[_type == "scheduleSlot" && day == $day] | order(time asc) {
         "id": _id,
         day,
@@ -263,14 +299,14 @@ export class SanityContentSource implements ContentSource {
         room,
         spots
       }
-    `, { day })
+    `, { day }, [])
     
     return schedule || []
   }
   
   // FAQ
   async getFAQs(): Promise<FAQ[]> {
-    const faqs = await client.fetch(`
+    const faqs = await this.safeFetch<FAQ[]>(`
       *[_type == "faq"] | order(order asc) {
         "id": _id,
         question,
@@ -278,13 +314,13 @@ export class SanityContentSource implements ContentSource {
         category,
         order
       }
-    `)
+    `, {}, [])
     
     return faqs || []
   }
   
   async getFAQsByCategory(category: string): Promise<FAQ[]> {
-    const faqs = await client.fetch(`
+    const faqs = await this.safeFetch<FAQ[]>(`
       *[_type == "faq" && category == $category] | order(order asc) {
         "id": _id,
         question,
@@ -292,14 +328,14 @@ export class SanityContentSource implements ContentSource {
         category,
         order
       }
-    `, { category })
+    `, { category }, [])
     
     return faqs || []
   }
   
   // Contact
   async getContactInfo(): Promise<ContactInfo> {
-    const contact = await client.fetch(`
+    const contact = await this.safeFetch<ContactInfo>(`
       *[_type == "contactInfo"][0] {
         address,
         city,
@@ -333,7 +369,7 @@ export class SanityContentSource implements ContentSource {
   
   // Blog
   async getBlogPosts(): Promise<BlogPost[]> {
-    const posts = await client.fetch(`
+    const posts = await this.safeFetch<BlogPost[]>(`
       *[_type == "blogPost"] | order(publishedAt desc) {
         "id": _id,
         title,
@@ -347,13 +383,13 @@ export class SanityContentSource implements ContentSource {
         tags,
         featured
       }
-    `)
+    `, {}, [])
     
     return posts || []
   }
   
   async getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-    const post = await client.fetch(`
+    const post = await this.safeFetch<BlogPost>(`
       *[_type == "blogPost" && slug.current == $slug][0] {
         "id": _id,
         title,
@@ -367,14 +403,14 @@ export class SanityContentSource implements ContentSource {
         tags,
         featured
       }
-    `, { slug })
+    `, { slug }, undefined)
     
     return post || null
   }
   
   // Site Settings
   async getSiteSettings(): Promise<SiteSettings> {
-    const settings = await client.fetch(`
+    const settings = await this.safeFetch<SiteSettings>(`
       *[_type == "siteSettings"][0] {
         siteName,
         siteDescription,
