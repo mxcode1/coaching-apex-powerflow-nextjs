@@ -20,7 +20,10 @@ export default defineConfig({
       navbar: (props) => {
         // Set dark theme as default and run startup check
         if (typeof window !== 'undefined') {
-          localStorage.setItem('sanity-ui-color-scheme', 'dark')
+          // Force dark mode on every load
+          const root = document.documentElement;
+          root.setAttribute('data-ui', 'dark');
+          localStorage.setItem('sanity-ui-color-scheme', 'dark');
           
           // Run startup content check after Studio loads
           setTimeout(async () => {
