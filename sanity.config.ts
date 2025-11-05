@@ -17,15 +17,20 @@ export default defineConfig({
   // Enable dark mode by default and run startup content check
   studio: {
     components: {
-      navbar: (props) => {
-        // Set dark theme as default and run startup check
+      layout: (props) => {
+        // Force dark mode immediately on load
         if (typeof window !== 'undefined') {
-          // Force dark mode on every load
-          const root = document.documentElement;
-          root.setAttribute('data-ui', 'dark');
+          // Set multiple attributes to ensure dark mode applies
+          document.documentElement.setAttribute('data-ui', 'dark');
+          document.documentElement.setAttribute('data-scheme', 'dark');
+          document.body.setAttribute('data-ui', 'dark');
           localStorage.setItem('sanity-ui-color-scheme', 'dark');
-          
-          // Run startup content check after Studio loads
+        }
+        return props.renderDefault(props)
+      },
+      navbar: (props) => {
+        // Run startup content check after Studio loads
+        if (typeof window !== 'undefined') {
           setTimeout(async () => {
             try {
               console.log('🎯 PowerFlow CMS - Running startup content check...');
