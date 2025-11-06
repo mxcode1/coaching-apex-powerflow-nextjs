@@ -6,13 +6,23 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "import-content": "node scripts/import-content.js",
+    "import-content:force": "node scripts/import-content.js --force",
+    "sanity": "./scripts/start-cms.sh",
+    "check-content": "node scripts/startup-import.js"
   },
   "dependencies": {
+    "@sanity/image-url": "^1.2.0",
+    "@sanity/vision": "^4.13.0",
+    "dotenv": "^17.2.3",
     "next": "16.0.1",
+    "next-sanity": "^11.6.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "resend": "^6.4.0"
+    "resend": "^6.4.0",
+    "sanity": "^4.13.0",
+    "styled-components": "^6.1.19"
   },
   "devDependencies": {
     "@types/node": "^20",
