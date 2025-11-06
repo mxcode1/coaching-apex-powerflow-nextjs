@@ -81,6 +81,75 @@ export default function StudioLayout({
             background-color: #1a1d1e !important;
             color: #e1e3e4 !important;
           }
+          
+          /* ===== LOGIN PAGE SPECIFIC FIXES ===== */
+          
+          /* Login container and cards */
+          [data-ui="LoginCard"],
+          [data-ui="Card"][class*="login"],
+          div[class*="login"] {
+            background-color: #1a1d1e !important;
+            color: #fff !important;
+          }
+          
+          /* Login buttons - Google, GitHub, etc. */
+          button[data-ui="Button"],
+          button[type="button"],
+          button[type="submit"] {
+            background-color: #fff !important;
+            color: #000 !important;
+            border: 1px solid #3a3d3e !important;
+            font-weight: 500 !important;
+          }
+          
+          /* Ensure button text is always visible */
+          button span,
+          button div,
+          button svg {
+            color: #000 !important;
+            fill: #000 !important;
+          }
+          
+          /* Login heading */
+          [data-ui="Heading"],
+          h2[data-ui="Heading"] {
+            color: #fff !important;
+          }
+          
+          /* Login provider buttons hover state */
+          button:hover {
+            background-color: #f0f0f0 !important;
+            opacity: 0.9 !important;
+          }
+          
+          /* Login footer links */
+          footer a,
+          [class*="footer"] a {
+            color: #00a6ed !important;
+          }
+          
+          /* Ensure all text in login flow is visible */
+          [data-ui="Dialog"] *,
+          [data-ui="Popover"] *,
+          [role="dialog"] * {
+            color: inherit;
+          }
+          
+          /* Override any light mode forcing */
+          [data-scheme="light"] [data-ui="Text"],
+          [data-scheme="light"] span,
+          [data-scheme="light"] div {
+            color: #fff !important;
+          }
+          
+          [data-scheme="light"] button {
+            background-color: #fff !important;
+            color: #000 !important;
+          }
+          
+          [data-scheme="light"] button span {
+            color: #000 !important;
+          }
         `
       }} />
       <div suppressHydrationWarning>
